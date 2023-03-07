@@ -124,3 +124,40 @@ plt.legend(loc="upper left")
 plt.xscale("log")
 plt.show()
 
+# Support Vector machine approach with a lower value for C
+from sklearn.svm import SVC
+svm = SVC(kernel="linear", C=1.0, random_state=1)
+svm.fit(X_train_std, y_train)
+plot_decision_regions(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+plt.xlabel("Petal length [standardized]")
+plt.ylabel("Petal width [standardized]")
+plt.legend(loc="upper left")
+plt.tight_layout()
+plt.show()
+
+np.random.seed(1)
+X_xor = np.random.randn(200, 2)
+y_xor = np.logical_xor(X_xor[:, 0] > 0, X_xor[:, 1] > 0)
+y_xor = np.where(y_xor, 1, 0)
+plt.scatter(X_xor[y_xor == 1, 0], X_xor[y_xor == 1, 1], c="royalblue", marker="s", label="Class 1")
+plt.scatter(X_xor[y_xor == 0, 0], X_xor[y_xor == 0, 1], c="tomato", marker="o", label="Class 0")
+plt.xlim([-3, 3])
+plt.ylim([-3, 3])
+plt.xlabel("Feature 1")
+plt.xlabel("Feature 2")
+plt.legend(loc="best")
+plt.tight_layout()
+plt.show()
+
+"""
+These classes are not linearly separable thus we map them into another dimension.
+In this case we can map each example into a 3 dimensional space via the following
+mapping function:
+   f(x1, x2) = (z1, z2, z3) = (x1, x2, x1**2 + x2**2)
+
+Basic kernel svm steps:
+Non linearly separable classes -> map them onto a 3d space -> fit a linear svm model
+(aka find the decision boundary) -> map the decision boundary back into the original dimension
+"""
+
+
