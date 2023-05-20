@@ -118,7 +118,6 @@ def features_onto_same_scale():
     print("Training accuracy:", lr.score(X_train_std, y_train))
     print("Test accuracy:", lr.score(X_test_std, y_test))
 
-
 def sequential_feature_selection():
     from sklearn import datasets
     from sklearn.base import clone
@@ -207,5 +206,3 @@ def sequential_feature_selection():
     plt.grid()
     plt.tight_layout()
     plt.show()
-
-sequential_feature_selection()
