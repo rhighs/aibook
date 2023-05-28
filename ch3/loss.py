@@ -1,14 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
+
 
 def loss_1(z):
     return -np.log(sigmoid(z))
 
+
 def loss_0(z):
     return -np.log(1 - sigmoid(z))
+
 
 z = np.arange(-10, 10, 0.1)
 sigma_z = sigmoid(z)

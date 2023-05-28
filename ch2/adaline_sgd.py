@@ -1,9 +1,9 @@
 import numpy as np
 
-class AdalineSGD:
 
+class AdalineSGD:
     def __init__(self, eta=0.01, n_iter=10, shuffle=True, random_state=None):
-        self.eta = eta # Learning rate
+        self.eta = eta  # Learning rate
         self.n_iter = n_iter
         self.w_initialized = False
         self.shuffle = shuffle
@@ -21,7 +21,7 @@ class AdalineSGD:
             avg_loss = np.mean(losses)
             self.losses_.append(avg_loss)
         return self
-    
+
     def partial_fit(self, X, y):
         if not self.w_initialized:
             self._initialize_weights(X.shape[1])
@@ -41,22 +41,24 @@ class AdalineSGD:
         self.w_ = self.rgen.normal(loc=0.0, scale=0.01, size=m)
         self.b_ = np.float_(0.0)
         self.w_initialized = True
-        
+
     """ single update over a single example xi """
+
     def _update_weights(self, xi, target):
         output = self.activation(self.net_input(xi))
-        error = (target - output)
+        error = target - output
         self.w_ += self.eta * 2.0 * xi * error
         self.b_ += self.eta * 2.0 * error
-        loss = error ** 2
-        return loss 
+        loss = error**2
+        return loss
 
     def net_input(self, X):
         return np.dot(X, self.w_) + self.b_
 
     """ Linear activation """
+
     def activation(self, X):
         return X
 
-    def predict(self, X): 
+    def predict(self, X):
         return np.where(self.activation(self.net_input(X)) >= 0.5, 1, 0)
