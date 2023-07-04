@@ -209,7 +209,7 @@ def show_grid_search():
 
 
 def randomized_search():
-    import scipy.stats
+    import scipy
     from sklearn.model_selection import RandomizedSearchCV
     from sklearn.svm import SVC
 
@@ -241,4 +241,36 @@ def randomized_search():
     print(rs.best_params_)
 
 
-randomized_search()
+def halving_random_search():
+    import scipy
+    from sklearn.experimental import enable_halving_search_cv
+    from sklearn.model_selection import HalvingRandomSearchCV
+    from sklearn.svm import SVC
+
+    param_range = scipy.stats.loguniform(
+        0.0001, 1000.0
+    )  # -> [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
+    np.random.seed(1)
+
+    pipe_svc = make_pipeline(StandardScaler(), SVC(random_state=1))
+    param_grid = {
+        "svc__C": param_range,
+        "svc__gamma": param_range,
+        "svc__kernel": ["rbf"],
+    }
+    hs = HalvingRandomSearchCV(
+        pipe_svc,
+        param_distributions=param_grid,
+        n_candidates="exhaust",  # use all resources at last round (training examples in this case)
+        resource="n_samples",  # training set size is the resource we vary between rounds
+        factor=1.5,  # 100%/n -> n = 1.5 how to divid the total number of candidate to obtain the successors
+        random_state=1,
+        n_jobs=-1,
+    )
+
+    hs.fit(X_train, y_train)
+    print(hs.best_score_)
+    print(hs.best_params_)
+
+
+halving_random_search()
