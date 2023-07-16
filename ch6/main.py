@@ -1,3 +1,4 @@
+from matplotlib.cbook import Stack
 import pandas as pd
 
 df = pd.read_csv(
@@ -295,4 +296,162 @@ def nested_cross_validation():
     print(f"CV accuracy: {np.mean(scores):.3f} ", f"+/- {np.std(scores):.3f}")
 
 
-nested_cross_validation()
+def confusion_matrix_example():
+    from sklearn.metrics import confusion_matrix
+    from sklearn.svm import SVC
+    import matplotlib.pyplot as plt
+
+    pipe_svc = make_pipeline(StandardScaler(), SVC(random_state=1))
+    pipe_svc.fit(X_train, y_train)
+    y_pred = pipe_svc.predict(X_test)
+    conf_mat = confusion_matrix(y_true=y_test, y_pred=y_pred)
+    print(conf_mat)
+
+    fig, ax = plt.subplots(figsize=(2.5, 2.5))
+    ax.matshow(conf_mat, cmap=plt.cm.Blues, alpha=0.3)
+    for i in range(conf_mat.shape[0]):
+        for j in range(conf_mat.shape[1]):
+            ax.text(x=j, y=i, s=conf_mat[i, j], va="center", ha="center")
+    ax.xaxis.set_ticks_position("bottom")
+    plt.xlabel("Predicted label")
+    plt.ylabel("True label")
+    plt.show()
+
+
+def pre_rec_f1_mcc():
+    from sklearn.metrics import precision_score
+    from sklearn.metrics import recall_score, f1_score
+    from sklearn.metrics import matthews_corrcoef
+    from sklearn.svm import SVC
+
+    pipe_svc = make_pipeline(StandardScaler(), SVC(random_state=1))
+    pipe_svc.fit(X_train, y_train)
+    y_pred = pipe_svc.predict(X_test)
+
+    pre_val = precision_score(y_true=y_test, y_pred=y_pred)
+    print(f"Precision: {pre_val:.3f}")
+    rec_val = recall_score(y_true=y_test, y_pred=y_pred)
+    print(f"Recall: {rec_val:.3f}")
+    f1_val = f1_score(y_true=y_test, y_pred=y_pred)
+    print(f"F1 score: {f1_val:.3f}")
+    mcc_val = matthews_corrcoef(y_true=y_test, y_pred=y_pred)
+    print(f"MCC: {mcc_val:.3f}")
+
+
+def grid_search_scorer():
+    from sklearn.metrics import f1_score
+    from sklearn.metrics import make_scorer
+    from sklearn.model_selection import GridSearchCV
+    from sklearn.svm import SVC
+
+    pipe_svc = make_pipeline(StandardScaler(), SVC(random_state=1))
+    pipe_svc.fit(X_train, y_train)
+
+    c_gamma_range = [0.01, 0.1, 1.0, 10.0]
+    param_grid = [
+        {
+            "svc__C": c_gamma_range,
+            "svc__kernel": ["linear"],
+        },
+        {"svc__C": c_gamma_range, "svc__gamma": c_gamma_range, "svc__kernel": ["rbf"]},
+    ]
+
+    scorer = make_scorer(f1_score, pos_label=0)
+    gs = GridSearchCV(
+        estimator=pipe_svc,
+        param_grid=param_grid,
+        scoring=scorer,
+        cv=10,
+    )
+
+    gs = gs.fit(X_train, y_train)
+    print(gs.best_score_)
+    print(gs.best_params_)
+
+
+def roc_curves():
+    from sklearn.metrics import roc_curve, auc
+    from sklearn.decomposition import PCA
+    from numpy import interp
+
+    pipe_lr = make_pipeline(
+        StandardScaler(),
+        PCA(n_components=2),
+        LogisticRegression(
+            penalty="l2",
+            random_state=1,
+            solver="lbfgs",
+            C=100.0,
+        ),
+    )
+    X_train2 = X_train[:, [4, 14]]
+
+    cv = list(StratifiedKFold(n_splits=3).split(X_train, y_train))
+    fig = plt.figure(figsize=(7, 5))
+    mean_tpr = 0.0
+    mean_fpr = np.linspace(0, 1, 100)
+    all_tpr = []
+    for i, (train, test) in enumerate(cv):
+        probas = pipe_lr.fit(
+            X_train2[train],
+            y_train[train],
+        ).predict_proba(X_train2[test])
+        fpr, tpr, thresholds = roc_curve(y_train[test], probas[:, 1], pos_label=1)
+        mean_tpr += interp(mean_fpr, fpr, tpr)
+        mean_tpr[0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, label=f"ROC fold {i+1} (area = {roc_auc:.2f})")
+    plt.plot(
+        [0, 1],
+        [0, 1],
+        linestyle="--",
+        color=(0.6, 0.6, 0.6),
+        label="Random guessing (area=0.5)",
+    )
+    mean_tpr /= len(cv)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    plt.plot(mean_fpr, mean_tpr, "k--", label=f"Mean ROC (area = {mean_auc:.2f})", lw=2)
+    plt.plot(
+        [0, 0, 1],
+        [0, 1, 1],
+        linestyle=":",
+        color="black",
+        label="Perfect performance (area=1.0)",
+    )
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel("False positive rate")
+    plt.ylabel("True positive rate")
+    plt.legend(loc="lower right")
+    plt.show()
+
+
+def class_imbalance():
+    from sklearn.utils import resample
+
+    # only take 40 of the malign tumors
+    X_imb = np.vstack((X[y == 0], X[y == 1][:40]))
+    y_imb = np.hstack((y[y == 0], y[y == 1][:40]))
+
+    # Stupid model -> always predict the majority class
+    # should yield 90%~ accuracy (benign tumors selected as majority)
+    y_pred = np.zeros(y_imb.shape[0])
+    acc = np.mean(y_pred == y_imb) * 100
+    print(f"Stupid model accuracy: {acc:.3f}%")
+
+    print(f"Number of class 1 examples before: {X_imb[y_imb == 1].shape[0]}")
+    X_upsampled, y_upsampled = resample(
+        X_imb[y_imb == 1],
+        y_imb[y_imb == 1],
+        replace=True,
+        n_samples=X_imb[y_imb == 0].shape[0],
+        random_state=123,
+    )
+    print(f"Number of class 1 examples after: {X_upsampled.shape[0]}")
+    X_bal = np.vstack((X[y == 0], X_upsampled))
+    y_bal = np.hstack((y[y == 0], y_upsampled))
+    y_pred = np.zeros(y_bal.shape[0])
+    print(f"Stupid model accuracy on balanced data: {np.mean(y_pred == y_bal) * 100}%")
+
+class_imbalance()
