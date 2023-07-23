@@ -1,4 +1,5 @@
 from scipy.special import comb
+
 import matplotlib.pyplot as plt
 import numpy as np
 import math
@@ -24,4 +25,14 @@ def plot_ensembles():
     plt.grid(alpha=0.5)
     plt.show()
 
-plot_ensembles()
+
+def majority_voting():
+    vote = np.argmax(np.bincount([0, 0, 1], weights=[0.2, 0.2, 0.6]))
+    print(f"Ready-made predictions majority voting: {vote}")
+
+    # probability based majority vote
+    ex = np.array([[0.9, 0.1], [0.8, 0.2], [0.4, 0.6]])
+    p = np.average(ex, axis=0, weights=[0.2, 0.2, 0.6])
+    vote = np.argmax(p)
+    print(f"Ensemble class labels probabilities: {p}")
+    print(f"Probability based majority voting: {vote}")
