@@ -5,13 +5,13 @@ import numpy as np
 
 
 class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, classifiers, vote="classlabel", weigths=None) -> None:
+    def __init__(self, classifiers, vote="classlabel", weights=None) -> None:
         self.classifiers = classifiers
         self.named_classifiers = {
             key: value for key, value in _name_estimators(classifiers)
         }
         self.vote = vote
-        self.weights = weigths
+        self.weights = weights
 
     def fit(self, X, y):
         if self.vote not in ("probability", "classlabel"):
@@ -45,7 +45,7 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
         return maj_vote
 
     def predict_proba(self, X):
-        probas = np.asarray(clf.predict_proba(X) for clf in self.classifiers_)
+        probas = np.asarray([clf.predict_proba(X) for clf in self.classifiers_])
         avg_proba = np.average(probas, axis=0, weights=self.weights)
         return avg_proba
 
