@@ -315,19 +315,26 @@ def ada_boost_classification():
     ada = AdaBoostClassifier(
         estimator=tree, n_estimators=500, learning_rate=0.1, random_state=1
     )
+
     tree = tree.fit(X_train, y_train)
     y_train_pred = tree.predict(X_train)
     y_test_pred = tree.predict(X_test)
     tree_train = accuracy_score(y_train, y_train_pred)
     tree_test = accuracy_score(y_test, y_test_pred)
+
+    print()
     print(f"Decision tree train/test accuracies {tree_train:.3f}/{tree_test:.3f}")
+    print()
 
     ada = ada.fit(X_train, y_train)
     y_train_pred = ada.predict(X_train)
     y_test_pred = ada.predict(X_test)
     ada_train = accuracy_score(y_train, y_train_pred)
     ada_test = accuracy_score(y_test, y_test_pred)
-    print(f"Ada boosttrain/test accuracies {ada_train:.3f}/{ada_test:.3f}")
+
+    print()
+    print(f"AdaBoost train/test accuracies {ada_train:.3f}/{ada_test:.3f}")
+    print()
 
     x_min = X_train[:, 0].min() - 1
     x_max = X_train[:, 0].max() + 1
