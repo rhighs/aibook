@@ -3,3 +3,5 @@ matplotlib
 scikit-learn
 pandas
 pyqt5
+pyprind
+nltk
