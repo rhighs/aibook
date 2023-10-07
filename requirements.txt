@@ -5,3 +5,4 @@ pandas
 pyqt5
 pyprind
 nltk
+mlxtend
