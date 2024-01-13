@@ -211,6 +211,8 @@ def LDA_example():
     # print a horror movie review
     horror = X_topics[:, 5].argsort()[::-1]
     for iter_idx, movie_idx in enumerate(horror[:3]):
-        print(f'\nHorror movie #{iter_idx}')
-        print(df['review'][movie_idx][:300], '...')
+        print(f"\nHorror movie #{iter_idx}")
+        print(df["review"][movie_idx][:300], "...")
+
+
 LDA_example()

@@ -366,13 +366,18 @@ def ada_boost_classification():
         transform=axarr[1].transAxes,
     )
     plt.show()
+
+
 # ada_boost_classification()
+
 
 def gradient_boosting():
     from sklearn.metrics import accuracy_score
     from xgboost import XGBClassifier
 
-    model = XGBClassifier(n_estimators=1000, learning_rate=0.01, max_depth=4, random_state=1)
+    model = XGBClassifier(
+        n_estimators=1000, learning_rate=0.01, max_depth=4, random_state=1
+    )
 
     gbm = model.fit(X_train, y_train)
     y_train_pred = gbm.predict(X_train)
@@ -385,5 +390,5 @@ def gradient_boosting():
     print(f"XGBoost train/test accuracies {gbm_train:.3f}/{gbm_test:.3f}")
     print()
 
-gradient_boosting()
 
+gradient_boosting()
