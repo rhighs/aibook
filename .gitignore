@@ -58,3 +58,11 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# archives
+*.tar.gz
+*.zip
+
+# randomly downloaded datasets
+MNIST
+celeba

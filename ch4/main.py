@@ -219,3 +219,7 @@ def sequential_feature_selection():
     plt.grid()
     plt.tight_layout()
     plt.show()
+
+import sys
+if __name__ == '__main__':
+    globals()[sys.argv[1]]()

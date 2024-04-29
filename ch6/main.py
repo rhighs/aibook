@@ -454,5 +454,6 @@ def class_imbalance():
     y_pred = np.zeros(y_bal.shape[0])
     print(f"Stupid model accuracy on balanced data: {np.mean(y_pred == y_bal) * 100}%")
 
-
-class_imbalance()
+import sys
+if __name__ == '__main__':
+    globals()[sys.argv[1]]()

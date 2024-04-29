@@ -3,6 +3,7 @@ from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 X, y = make_blobs(
     n_samples=150,
@@ -375,5 +376,5 @@ def kmeans_vs_agglomerative_vs_dbscan_moons():
     plt.tight_layout()
     plt.show()
 
-
-kmeans_vs_agglomerative_vs_dbscan_moons()
+if __name__ == '__main__':
+    globals()[sys.argv[1]]()

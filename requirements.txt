@@ -7,3 +7,6 @@ pyprind
 nltk
 mlxtend
 neuralnet
+torch
+torchvision
+gdown
