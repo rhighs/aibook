@@ -66,3 +66,7 @@ cython_debug/
 # randomly downloaded datasets
 MNIST
 celeba
+
+# saved models
+*.pt
+*.pth
