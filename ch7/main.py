@@ -390,6 +390,8 @@ def gradient_boosting():
     print(f"XGBoost train/test accuracies {gbm_train:.3f}/{gbm_test:.3f}")
     print()
 
+
 import sys
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     globals()[sys.argv[1]]()

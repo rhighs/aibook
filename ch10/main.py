@@ -376,5 +376,6 @@ def kmeans_vs_agglomerative_vs_dbscan_moons():
     plt.tight_layout()
     plt.show()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     globals()[sys.argv[1]]()

@@ -302,5 +302,6 @@ plot_projection(X_digits_tsne, y_digits)
 plt.show()
 
 import sys
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     globals()[sys.argv[1]]()

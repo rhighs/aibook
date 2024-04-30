@@ -295,6 +295,8 @@ def polynomial_features_examples():
     plt.tight_layout()
     plt.show()
 
+
 import sys
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     globals()[sys.argv[1]]()

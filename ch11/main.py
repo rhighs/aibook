@@ -112,5 +112,5 @@ epoch_loss, epoch_train_acc, epoch_valid_acc = train(
     model, X_train, y_train, X_valid, y_valid, num_epochs=50, learning_rate=0.1
 )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     globals()[sys.argv[1]]()

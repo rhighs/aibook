@@ -1,5 +1,4 @@
 import sys
-from scipy import optimize
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
@@ -110,17 +109,22 @@ def torch_datasets():
         ax = fig.add_subplot(2, 5, i + 1)
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.imshow(image, cmap='gray_r')
+        ax.imshow(image, cmap="gray_r")
         ax.set_title(f"{label}", size=15)
     plt.show()
 
+
 from torch.utils.data import TensorDataset
+
+
 def linear_regression():
-    X_train = np.arange(10, dtype='float32').reshape((10, 1))
-    y_train = np.array([1.0, 1.3, 3.1, 2.0, 5.0, 6.3, 6.6, 7.4, 8.0, 9.0], dtype='float32')
-    plt.plot(X_train, y_train, 'o', markersize=5)
-    plt.xlabel('x')
-    plt.ylabel('y')
+    X_train = np.arange(10, dtype="float32").reshape((10, 1))
+    y_train = np.array(
+        [1.0, 1.3, 3.1, 2.0, 5.0, 6.3, 6.6, 7.4, 8.0, 9.0], dtype="float32"
+    )
+    plt.plot(X_train, y_train, "o", markersize=5)
+    plt.xlabel("x")
+    plt.ylabel("y")
     plt.show()
 
     X_train_norm = (X_train - (np.mean(X_train))) / np.std(X_train)
@@ -161,7 +165,7 @@ def linear_regression():
             print(f"Epoch {epoch} - Loss {loss.item():.4f} (loss raw value: {loss})")
     print(f"Final params: {weight.item()} {bias.item()}")
 
-    X_test = np.linspace(0, 9, num=100, dtype='float32').reshape(-1, 1)
+    X_test = np.linspace(0, 9, num=100, dtype="float32").reshape(-1, 1)
     X_test_norm = (X_test - np.mean(X_test)) / np.std(X_test)
     X_test_norm = torch.from_numpy(X_test_norm)
 
@@ -169,17 +173,20 @@ def linear_regression():
     y_pred = model(X_test_norm).detach().numpy()
     fig = plt.figure(figsize=(13, 5))
     ax = fig.add_subplot(1, 2, 1)
-    plt.plot(X_train_norm, y_train, 'o', markersize= 10)
-    plt.plot(X_test_norm, y_pred, '--', lw=3)
-    plt.legend(['Training examples', 'Linear reg.'], fontsize=15)
-    ax.set_xlabel('x', size=15)
-    ax.set_ylabel('y', size=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
+    plt.plot(X_train_norm, y_train, "o", markersize=10)
+    plt.plot(X_test_norm, y_pred, "--", lw=3)
+    plt.legend(["Training examples", "Linear reg."], fontsize=15)
+    ax.set_xlabel("x", size=15)
+    ax.set_ylabel("y", size=15)
+    ax.tick_params(axis="both", which="major", labelsize=15)
     plt.show()
 
+
 def training_via_torch_nn():
-    X_train = np.arange(10, dtype='float32').reshape((10, 1))
-    y_train = np.array([1.0, 1.3, 3.1, 2.0, 5.0, 6.3, 6.6, 7.4, 8.0, 9.0], dtype='float32')
+    X_train = np.arange(10, dtype="float32").reshape((10, 1))
+    y_train = np.array(
+        [1.0, 1.3, 3.1, 2.0, 5.0, 6.3, 6.6, 7.4, 8.0, 9.0], dtype="float32"
+    )
 
     X_train_norm = (X_train - (np.mean(X_train))) / np.std(X_train)
     X_train_norm = torch.from_numpy(X_train_norm)
@@ -191,7 +198,7 @@ def training_via_torch_nn():
     num_epochs = 200
     log_epochs = 10
 
-    loss_fn = nn.MSELoss(reduction='mean')
+    loss_fn = nn.MSELoss(reduction="mean")
     input_size = 1
     output_size = 1
     model = nn.Linear(input_size, output_size)
@@ -208,7 +215,8 @@ def training_via_torch_nn():
             optimizer.zero_grad()
         if epoch % log_epochs == 0:
             print(f"Epoch {epoch} - Loss {loss.item():.4f} (loss raw value: {loss})")
-    print('Final Parameters:', model.weight.item(), model.bias.item())
+    print("Final Parameters:", model.weight.item(), model.bias.item())
+
 
 class Model(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -222,17 +230,22 @@ class Model(nn.Module):
         x = self.layer2(x)
         return x
 
+
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+
+
 def iris_classifier_multilayer():
     iris = load_iris()
-    X = iris['data']
-    y = iris['target']
+    X = iris["data"]
+    y = iris["target"]
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=1./3, random_state=1
+        X, y, test_size=1.0 / 3, random_state=1
     )
 
-    X_train_norm = torch.from_numpy((X_train - np.mean(X_train)) / np.std(X_train)).float()
+    X_train_norm = torch.from_numpy(
+        (X_train - np.mean(X_train)) / np.std(X_train)
+    ).float()
     y_train = torch.from_numpy(y_train)
     train_ds = TensorDataset(X_train_norm, y_train)
     train_dl = DataLoader(train_ds, batch_size=2, shuffle=True)
@@ -253,12 +266,12 @@ def iris_classifier_multilayer():
         for x_batch, y_batch in train_dl:
             pred = model(x_batch)
 
-            # casting to long here fixes: RuntimeError: expected scalar type Long but found Int 
+            # casting to long here fixes: RuntimeError: expected scalar type Long but found Int
             loss = loss_fn(pred, y_batch.long())
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
-            loss_hist[epoch] += loss.item()*y_batch.size(0)
+            loss_hist[epoch] += loss.item() * y_batch.size(0)
 
             # get index for the predicted output and check if it matches with the expected trainng label
             is_correct = (torch.argmax(pred, dim=1) == y_batch).float()
@@ -269,14 +282,14 @@ def iris_classifier_multilayer():
     fig = plt.figure(figsize=(12, 5))
     ax = fig.add_subplot(1, 2, 1)
     ax.plot(loss_hist, lw=3)
-    ax.set_title('Training loss', size=15)
-    ax.set_xlabel('Epoch', size=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
+    ax.set_title("Training loss", size=15)
+    ax.set_xlabel("Epoch", size=15)
+    ax.tick_params(axis="both", which="major", labelsize=15)
     ax = fig.add_subplot(1, 2, 2)
     ax.plot(accuracy_hist, lw=3)
-    ax.set_title('Training accuracy', size=15)
-    ax.set_xlabel('Epoch', size=15)
-    ax.tick_params(axis='both', which='major', labelsize=15)
+    ax.set_title("Training accuracy", size=15)
+    ax.set_xlabel("Epoch", size=15)
+    ax.tick_params(axis="both", which="major", labelsize=15)
     plt.show()
 
     X_test_norm = torch.from_numpy((X_test - np.mean(X_test)) / np.std(X_test)).float()
@@ -292,7 +305,7 @@ def iris_classifier_multilayer():
     #
     # to only save params:
     # torch.save(model.state_dict(), model_path)
-    # then loading it with: 
+    # then loading it with:
     #   model_new = Model(input_size, hidden_size, output_size)
     #   model_new.load_state_dict(torch.load(model_path))
     #
@@ -302,6 +315,7 @@ def iris_classifier_multilayer():
     correct = (torch.argmax(pred_test, dim=1) == y_test).float()
     accuracy = correct.mean()
     print(f"[loaded-model]: Test dataset accuracy: {accuracy:.4f}")
+
 
 if __name__ == "__main__":
     globals()[sys.argv[1]]()
