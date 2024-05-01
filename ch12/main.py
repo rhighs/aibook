@@ -317,5 +317,114 @@ def iris_classifier_multilayer():
     print(f"[loaded-model]: Test dataset accuracy: {accuracy:.4f}")
 
 
+"""
+NOTE:
+
+A simple logistic function is a special case of a sigmoid function if you will. It is primarily
+used to model the probabilty of a certain sample belonging to a certain class in classification tasks.
+
+e.g.
+```
+    z = w0*x0 + .. + wn*xn = w.T * x => then feed it to the sigmoid => proba = sigmoid(z) = 1/(1 + e**-z)
+```
+
+However, an output layer consisting of multiple logistic activation units does not produce meaningful
+and interpretable probability results: the sum of the outputs does not add up to 1
+"""
+
+
+def net_input(X, w):
+    return np.dot(w, X)
+
+
+def logistic(z):
+    return 1 / (1 + np.exp(-z))
+
+
+def logistic_activation(X, w):
+    z = net_input(X, w)
+    return logistic(z)
+
+
+def simple_logistic_task_example():
+    X = np.array([1, 1.4, 2.5])
+    w = np.array([0.4, 0.3, 0.5])
+    print(f"P(y = 1 | x) = {logistic_activation(X, w):.3f}")
+
+
+def wrong_multiple_logistic_output_layer():
+    W = np.array(
+        [
+            [1.1, 1.2, 0.8, 0.4],
+            [0.2, 0.4, 1.0, 0.2],
+            [0.6, 1.5, 1.2, 0.7],
+        ]
+    )
+
+    def net_input(X, w):
+        return np.dot(w, X)
+
+    def logistic(z):
+        return 1 / (1 + np.exp(-z))
+
+    def logistic_activation(X, w):
+        z = net_input(X, w)
+        return logistic(z)
+
+    A = np.array([[1, 0.1, 0.4, 0.6]])
+    Z = np.dot(W, A[0])
+    y_probas = logistic(Z)
+    print(f"Net input: {Z}\n")
+    print(f"Output layer values: {y_probas}\n")
+
+    y_class = np.argmax(Z, axis=0)
+    print(f'Predicted class label:', y_class)
+
+"""
+NOTE:
+
+Depending on the task goal, this might not be too big of an issue. In fact if we only want to know the predicted class
+label and do not care about class membership probabilities, we could use the argmax function to get the class label with the highes logistic output value
+
+To achieve the aforementioned first case, we'll use the softmax function which is a soft form of the argmax function which instead of providing a single class index,
+it gives the probability of each class. Therefore, it allows for getting meaningful class probabilities in multiclass settings.
+"""
+
+def softmax(z):
+    return np.exp(z) / np.sum(np.exp(z))
+
+"""
+NOTE:
+
+Another sigmoidal function that is often used in the hidden layers of artificial NNs is the hyperbolic
+tangent (commonly known as tanh), which can be interpreted as a rescaled version of the logistic
+function. It maps to the open interval (-1, 1) which has been shown to improve convergence of the backpropagation algorithm.
+On the other hand, the logistic function returns an output signal ranging in the open interval (0, 1)
+"""
+
+def tanh(z):
+    e_p = np.exp(z)
+    e_n = np.exp(-z)
+    return (e_p - e_n) / (e_p + e_n)
+
+"""
+NOTE:
+
+The shapes of the two sigmoidal curves look very similar; however, the tanh function
+has double the output space of the logistic function
+"""
+
+
+"""
+The derivative of activations seen so far with respect to the net input diminishes as z becomes
+large. As a result, learning the weights during the training phase becomes very slow
+because the gradient terms may be very close to zero. ReLU activation addresses this issue.
+
+ReLU is a really simple function which can be represented as:   `relu(z) = max(0, z)`
+or in pytorch notation:                                         `torch.relu(torch.from_numpy(z))`
+"""
+
+
+
 if __name__ == "__main__":
     globals()[sys.argv[1]]()
